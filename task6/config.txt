@@ -1,0 +1,29 @@
+upstream django_backend {
+  server 127.0.0.1:8081;
+}
+
+server {
+  listen 80 default_server;
+  server_name askpython.ru;
+  access_log /var/log/nginx/AskPython.access.log;
+  error_log /var/log/nginx/AskPython.error.log;
+
+  location /static {
+    root "/home/alex/Рабочий стол/Технопарк/1 семестр/WEB/AskPython";
+    expires 1d;
+    add_header Cache-Control "public";
+  }
+
+  location /uploads {
+    root "/home/alex/Рабочий стол/Технопарк/1 семестр/WEB/AskPython";
+  }
+
+  location / {
+    proxy_pass http://django_backend;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    # proxy_cache askpython_cache;
+    # proxy_cache_valid 200 302 10m;
+  }
+}
+
